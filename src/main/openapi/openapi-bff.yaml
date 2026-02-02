@@ -1,13 +1,14 @@
 ---
 openapi: 3.0.3
 info:
-  title: onecx-chat bff
-  version: 1.0.0
+  title: onecx-workspace-bff
+  description: Backend-For-Frontend (BFF) service for onecx-chat. This API provides endpoints for managing Chats, Messages and Participants.
+  version: "1.0"
 servers:
-  - url: "http://onecx-chat-bff:8081"
+  - url: "http://onecx-chat-bff:8080"
 tags:
   - name: chats
-  - name: messages  
+    description: Operations related to chats
 paths:
   /chats/{chatId}/messages:
     get:
@@ -494,7 +495,8 @@ components:
         userName:
           type: string
         reliability:
-          type: float
+          type: number
+          format: float
     Participant:
       required:
         - type
@@ -580,7 +582,28 @@ components:
         userName:
           type: string
         reliability:
-          type: float
+          type: number
+          format: float
+        requestContext:
+          $ref: '#/components/schemas/RequestContext'
+    RequestContext:
+      type: object
+      properties:
+        filter:
+          $ref: '#/components/schemas/ConfigurationFilter'
+        aiContext:
+          type: object
+          additionalProperties:
+            type: string
+    ConfigurationFilter:
+      type: object
+      properties:
+        key:
+          type: string
+          enum:
+            - APP_ID
+        value:
+          type: string
     AddParticipant:
       required:
         - type

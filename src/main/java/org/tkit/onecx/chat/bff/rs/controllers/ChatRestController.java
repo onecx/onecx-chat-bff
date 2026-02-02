@@ -66,8 +66,8 @@ public class ChatRestController implements ChatsApiService {
             MessageDTO mDto = messageMapper.mapToMessage(createMessageDTO);
 
             try (Response r = client.getChatParticipants(chatId)) {
-                List<ParticipantDTO> l = r.readEntity(new GenericType<List<ParticipantDTO>>() {
-                });
+                List<ParticipantDTO> l = participantMapper.map(r.readEntity(new GenericType<List<Participant>>() {
+                }));
                 List<String> userNames = new ArrayList<>();
 
                 l.forEach(p -> {
@@ -98,7 +98,7 @@ public class ChatRestController implements ChatsApiService {
     @Override
     public Response getChatMessages(String chatId) {
         try (Response response = client.getChatMessages(chatId)) {
-            List<Message> m = response.readEntity(new GenericType<List<Message>>() {
+            List<Message> m = response.readEntity(new GenericType<>() {
             });
             List<MessageDTO> m2 = messageMapper.map(m);
             return Response.status(Response.Status.OK).entity(m2).build();
@@ -108,7 +108,7 @@ public class ChatRestController implements ChatsApiService {
     @Override
     public Response getChatParticipants(String chatId) {
         try (Response response = client.getChatParticipants(chatId)) {
-            List<Participant> p = response.readEntity(new GenericType<List<Participant>>() {
+            List<Participant> p = response.readEntity(new GenericType<>() {
             });
             List<ParticipantDTO> p2 = participantMapper.map(p);
             return Response.status(Response.Status.OK).entity(p2).build();
