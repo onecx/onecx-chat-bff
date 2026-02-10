@@ -1,7 +1,7 @@
 app:
   name: bff
   image: 
-    repository: "onecx-apps/onecx-chat-bff"
+    repository: "onecxgit /onecx-chat-bff"
   operator:
     # Permission
     permission:

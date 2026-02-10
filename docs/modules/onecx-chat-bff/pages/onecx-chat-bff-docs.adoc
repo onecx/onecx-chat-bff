@@ -47,7 +47,7 @@ include::onecx-chat-bff-extensions.adoc[opts=optional]
 app:
   name: bff
   image: 
-    repository: "onecx-apps/onecx-chat-bff"
+    repository: "onecx/onecx-chat-bff"
   operator:
     # Permission
     permission:

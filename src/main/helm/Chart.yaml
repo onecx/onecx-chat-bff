@@ -6,12 +6,12 @@ description: Onecx chat bff
 keywords:
   - chat
 sources:
-  - https://github.com/onecx-apps/onecx-chat-bff
+  - https://github.com/onecx/onecx-chat-bff
 maintainers:
   - name: Tkit Developer
     email: tkit_dev@1000kit.org
 dependencies:
   - name: helm-quarkus-app
     alias: app
-    version: ^0
+    version: 0.42.0
     repository: oci://ghcr.io/onecx/charts
