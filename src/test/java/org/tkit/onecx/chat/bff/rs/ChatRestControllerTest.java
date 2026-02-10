@@ -59,7 +59,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var chatId = "id";
 
         ChatDTO chatDTO = new ChatDTO();
-        chatDTO.setType(ChatTypeDTO.HUMAN_CHAT);
+        chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
         mockServerClient
                 .when(request()
@@ -85,7 +85,7 @@ public class ChatRestControllerTest extends AbstractTest {
                 .body().as(ChatDTO.class);
 
         assertThat(res).isNotNull();
-        assertThat(res.getType()).isEqualTo((ChatTypeDTO.HUMAN_CHAT));
+        assertThat(res.getType()).isEqualTo((ChatTypeDTO.HUMAN_DIRECT_CHAT));
     }
 
     @Test
@@ -603,7 +603,7 @@ public class ChatRestControllerTest extends AbstractTest {
     public void getChatsTest() {
 
         ChatDTO chatDTO = new ChatDTO();
-        chatDTO.setType(ChatTypeDTO.HUMAN_CHAT);
+        chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
         List<ChatDTO> chatDTOList = new ArrayList<>();
         chatDTOList.add(chatDTO);
@@ -679,7 +679,7 @@ public class ChatRestControllerTest extends AbstractTest {
     @Test
     public void searchChatsTest() {
         ChatDTO chatDTO = new ChatDTO();
-        chatDTO.setType(ChatTypeDTO.HUMAN_CHAT);
+        chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
         List<ChatDTO> chatDTOList = new ArrayList<>();
         chatDTOList.add(chatDTO);
@@ -690,7 +690,7 @@ public class ChatRestControllerTest extends AbstractTest {
         chatPageResultDTO.setStream(chatDTOList);
 
         ChatSearchCriteriaDTO chatSearchCriteriaDTO = new ChatSearchCriteriaDTO();
-        chatSearchCriteriaDTO.setType(ChatTypeDTO.HUMAN_CHAT);
+        chatSearchCriteriaDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
         mockServerClient.when(request()
                 .withPath("/internal/chats/search")
@@ -714,7 +714,7 @@ public class ChatRestControllerTest extends AbstractTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getStream()).isNotNull().hasSize(1);
-        assertThat(response.getStream().get(0).getType()).isEqualTo(ChatTypeDTO.HUMAN_CHAT);
+        assertThat(response.getStream().get(0).getType()).isEqualTo(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
     }
 
@@ -725,7 +725,7 @@ public class ChatRestControllerTest extends AbstractTest {
         problemDetailResponse.setDetail("Bad Request");
 
         ChatSearchCriteriaDTO chatSearchCriteriaDTO = new ChatSearchCriteriaDTO();
-        chatSearchCriteriaDTO.setType(ChatTypeDTO.HUMAN_CHAT);
+        chatSearchCriteriaDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
         mockServerClient.when(request()
                 .withPath("/internal/chats/search")
@@ -757,10 +757,10 @@ public class ChatRestControllerTest extends AbstractTest {
         var chatId = "id";
 
         UpdateChatDTO updateChatDTO = new UpdateChatDTO();
-        updateChatDTO.setType(ChatTypeDTO.HUMAN_CHAT);
+        updateChatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
         Chat chat = new Chat();
-        chat.setType(ChatType.HUMAN_CHAT);
+        chat.setType(ChatType.HUMAN_DIRECT_CHAT);
 
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId)
@@ -785,7 +785,7 @@ public class ChatRestControllerTest extends AbstractTest {
                 .as(ChatDTO.class);
 
         assertThat(res).isNotNull();
-        assertThat(res.getType()).isEqualTo(ChatTypeDTO.HUMAN_CHAT);
+        assertThat(res.getType()).isEqualTo(ChatTypeDTO.HUMAN_DIRECT_CHAT);
     }
 
     @Test
@@ -793,7 +793,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var chatId = "id";
 
         UpdateChatDTO updateChatDTO = new UpdateChatDTO();
-        updateChatDTO.setType(ChatTypeDTO.HUMAN_CHAT);
+        updateChatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
         ProblemDetailResponse problemDetailResponse = new ProblemDetailResponse();
         problemDetailResponse.setErrorCode(String.valueOf(BAD_REQUEST.getStatusCode()));

@@ -17,6 +17,7 @@ quarkus.http.auth.permission.health.policy=permit
 quarkus.http.auth.permission.default.paths=/*
 quarkus.http.auth.permission.default.policy=authenticated
 org.eclipse.microprofile.rest.client.propagateHeaders=apm-principal-token
+%prod.quarkus.rest-client.onecx_chat_svc.url=http://onecx-chat-svc:8080
 quarkus.openapi-generator.codegen.input-base-dir=target/tmp/openapi
 quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.config-key=onecx_chat_svc
 quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.base-package=gen.org.tkit.onecx.chat.clients

@@ -187,7 +187,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
-              <uri>https://raw.githubusercontent.com/onecx-apps/onecx-chat-svc/main/src/main/openapi/onecx-chat-internal-openapi.yaml</uri>
+              <uri>https://raw.githubusercontent.com/onecx/onecx-chat-svc/main/src/main/openapi/onecx-chat-internal-openapi.yaml</uri>
               <outputDirectory>target/tmp/openapi</outputDirectory>
               <outputFileName>onecx-chat-internal-openapi.yaml</outputFileName>
               <skipCache>true</skipCache>

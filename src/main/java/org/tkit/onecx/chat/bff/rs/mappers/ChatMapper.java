@@ -1,7 +1,5 @@
 package org.tkit.onecx.chat.bff.rs.mappers;
 
-import java.util.List;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
@@ -33,9 +31,6 @@ public interface ChatMapper {
     ChatSearchCriteriaDTO map(ChatSearchCriteria chatSearchCriteria);
 
     ChatSearchCriteria map(ChatSearchCriteriaDTO chatSearchCriteriaDTO);
-
-    @Mapping(target = "removeStreamItem", ignore = true)
-    List<ChatPageResultDTO> map(List<ChatPageResult> results);
 
     @Mapping(target = "removeStreamItem", ignore = true)
     ChatPageResultDTO map(ChatPageResult chatPageResult);
