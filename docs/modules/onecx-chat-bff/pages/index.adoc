@@ -1,0 +1,7 @@
+include::onecx-chat-bff-attributes.adoc[opts=optional]
+
+= OneCX Chat Backend For Frontend
+
+
+
+include::onecx-chat-bff-docs.adoc[opts=optional]

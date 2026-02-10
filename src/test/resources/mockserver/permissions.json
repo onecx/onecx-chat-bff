@@ -1,0 +1,78 @@
+[
+    {
+        "id" : "2",
+        "httpRequest" : {
+            "headers" : {
+                "apm-principal-token" : [
+                    "alice"
+                ]
+            },
+            "path" : "/v1/permissions/user/applications/onecx-chat-bff"
+        },
+        "httpResponse" : {
+            "body" : {
+                "type" : "JSON",
+                "json" : {
+                    "appId" : "onecx-theme-bff",
+                    "permissions" : {
+                        "chat" : [
+                            "read",
+                            "write",
+                            "delete"
+                        ],
+                        "message" : [
+                            "read",
+                            "write",
+                            "delete"
+                        ],
+                        "participant" : [
+                            "read",
+                            "write",
+                            "delete"
+                        ],
+                        "permissions" : [
+                            "admin-write",
+                            "admin-read"
+                        ]
+                    }
+                },
+                "contentType" : "application/json"
+            }
+        }
+    },
+    {
+        "id" : "3",
+        "httpRequest" : {
+            "headers" : {
+                "apm-principal-token" : [
+                    "bob"
+                ]
+            },
+            "path" : "/v1/permissions/user/applications/onecx-chat-bff"
+        },
+        "httpResponse" : {
+            "body" : {
+                "type" : "JSON",
+                "json" : {
+                    "appId" : "onecx-theme-bff",
+                    "permissions" : {
+                        "chat" : [
+                            "read"
+                        ],
+                        "message" : [
+                            "read"
+                        ],
+                        "participant" : [
+                            "read"
+                        ],
+                        "permissions" : [
+                            "admin-write",
+                            "admin-read"
+                        ]
+                    }
+                },
+                "contentType" : "application/json"
+            }
+        }
+    }
+]

@@ -1,0 +1,75 @@
+
+include::onecx-chat-bff-attributes.adoc[opts=optional]
+
+{docker-registry}[Link to Docker registry]
+
+== Default properties
+
+.{properties-file}
+[%collapsible]
+====
+[source,properties,subs=attributes+]
+----
+onecx.permisisons.application-id=${quarkus.application.name}
+quarkus.security.auth.enabled-in-dev-mode=false
+quarkus.http.auth.permission.health.paths=/q/*
+quarkus.http.auth.permission.health.policy=permit
+quarkus.http.auth.permission.default.paths=/*
+quarkus.http.auth.permission.default.policy=authenticated
+org.eclipse.microprofile.rest.client.propagateHeaders=apm-principal-token
+%prod.quarkus.rest-client.onecx_chat_svc.url=http://onecx-chat-svc:8080
+quarkus.openapi-generator.codegen.input-base-dir=target/tmp/openapi
+quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.config-key=onecx_chat_svc
+quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.base-package=gen.org.tkit.onecx.chat.clients
+quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.return-response=true
+quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.additional-api-type-annotations=@org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
+quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.additional-model-type-annotations=@io.quarkus.runtime.annotations.RegisterForReflection;
+quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.enable-security-generation=false
+%prod.quarkus.rest-client.onecx_chat_svc.providers=io.quarkus.oidc.client.reactive.filter.OidcClientRequestReactiveFilter
+%prod.quarkus.oidc-client.client-id=${quarkus.application.name}
+----
+====
+
+== Extensions
+.Extensions List
+[%collapsible]
+====
+include::onecx-chat-bff-extensions.adoc[opts=optional]
+====
+
+== Helm
+
+{helm-registry}[Link to Helm registry]
+
+.Default values in {helm-file}
+[source,yaml]
+----
+app:
+  name: bff
+  image: 
+    repository: "onecx/onecx-chat-bff"
+  operator:
+    # Permission
+    permission:
+      enabled: true
+      spec:
+        permissions:
+          chat:
+            read: permission on all GET requests and POST search
+            write: permission on PUT, POST, PATCH requests, where objects are saved or updated
+            delete: permission on all DELETE requests
+          message:
+            read: permission on all GET requests and POST search
+            write: permission on PUT, POST, PATCH requests, where objects are saved or updated
+            delete: permission on all DELETE requests
+          participant:
+            read: permission on all GET requests and POST search
+            write: permission on PUT, POST, PATCH requests, where objects are saved or updated
+            delete: permission on all DELETE requests
+    keycloak:
+      client:
+        enabled: true
+        spec:
+          kcConfig:
+            defaultClientScopes: [ ocx-chat:all, ocx-pm:read ]
+----
