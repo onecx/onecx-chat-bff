@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  title: onecx-workspace-bff
+  title: onecx-chat-bff
   description: Backend-For-Frontend (BFF) service for onecx-chat. This API provides endpoints for managing Chats, Messages and Participants.
   version: "1.0"
 servers:
