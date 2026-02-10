@@ -69,6 +69,10 @@
             <artifactId>tkit-quarkus-rest-context</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
         </dependency>
@@ -191,6 +195,19 @@
               <outputDirectory>target/tmp/openapi</outputDirectory>
               <outputFileName>onecx-chat-internal-openapi.yaml</outputFileName>
               <skipCache>true</skipCache>
+            </configuration>
+          </execution>
+          <execution>
+            <id>user-profile-svc-external-v1</id>
+            <phase>generate-resources</phase>
+            <goals>
+                <goal>wget</goal>
+            </goals>
+            <configuration>
+                <url>https://raw.githubusercontent.com/onecx/onecx-user-profile-svc/main/src/main/openapi/onecx-userprofile-v1.yaml</url>
+                <outputDirectory>target/tmp/openapi</outputDirectory>
+                <outputFileName>onecx-user-profile-svc-v1.yaml</outputFileName>
+                <skipCache>true</skipCache>
             </configuration>
           </execution>
         </executions>
