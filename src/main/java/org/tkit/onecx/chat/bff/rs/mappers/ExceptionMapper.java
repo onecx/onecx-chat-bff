@@ -15,6 +15,7 @@ import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.tkit.onecx.chat.bff.domain.exception.NoUserProfileException;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
 import gen.org.tkit.onecx.chat.bff.rs.internal.model.ProblemDetailInvalidParamDTO;
@@ -54,6 +55,13 @@ public interface ExceptionMapper {
     @Mapping(target = "invalidParams", ignore = true)
     @Mapping(target = "removeInvalidParamsItem", ignore = true)
     ProblemDetailResponseDTO exception(String errorCode, String detail);
+
+    @Mapping(target = "removeParamsItem", ignore = true)
+    @Mapping(target = "params", ignore = true)
+    @Mapping(target = "invalidParams", ignore = true)
+    @Mapping(target = "removeInvalidParamsItem", ignore = true)
+    @Mapping(target = "detail", source = "message")
+    ProblemDetailResponseDTO noProfileFound(NoUserProfileException e);
 
     default List<ProblemDetailParamDTO> map(Map<String, Object> params) {
         if (params == null) {
