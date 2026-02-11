@@ -19,6 +19,8 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Header;
 import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
+import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfileAbstract;
+import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfilePageResult;
 import org.tkit.onecx.chat.bff.rs.controllers.ChatRestController;
 import org.tkit.quarkus.log.cdi.LogService;
 
@@ -43,15 +45,37 @@ public class ChatRestControllerTest extends AbstractTest {
 
     static final String mockId = "MOCK";
     static final String mockIdSecondary = "MOCK_SECONDARY";
+    static final String mockIdUserProfile = "MOCK_USER_PROFILE";
+
+    static final String USERNAME_TOKEN = "apm-username";
 
     @BeforeEach
     public void resetExpectation() {
         try {
             mockServerClient.clear(mockId);
             mockServerClient.clear(mockIdSecondary);
+            mockServerClient.clear(mockIdUserProfile);
         } catch (Exception e) {
             // mockid not existing
         }
+    }
+
+    private UserProfileAbstract createUserProfile(String userId, String displayName, String email) {
+        UserProfileAbstract profile = new UserProfileAbstract();
+        profile.setUserId(userId);
+        profile.setDisplayName(displayName);
+        profile.setEmailAddress(email);
+        return profile;
+    }
+
+    private UserProfilePageResult createUserProfilePageResult(UserProfileAbstract profile) {
+        UserProfilePageResult result = new UserProfilePageResult();
+        result.setStream(List.of(profile));
+        result.setSize(1);
+        result.setNumber(0);
+        result.setTotalElements(1L);
+        result.setTotalPages(1L);
+        return result;
     }
 
     @Test
@@ -74,7 +98,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var res = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .get("{id}")
@@ -106,7 +130,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .get("{id}")
@@ -125,6 +149,24 @@ public class ChatRestControllerTest extends AbstractTest {
         AddParticipant addParticipant = new AddParticipant();
         addParticipant.setUserId("userId");
         addParticipant.setType(ParticipantType.HUMAN);
+        addParticipant.setUserName("user1");
+        addParticipant.setEmail("user1@test.com");
+
+        AddParticipantDTO addParticipantDTO = new AddParticipantDTO();
+        addParticipantDTO.setUserName("user1");
+        addParticipantDTO.setUserId("userId");
+        addParticipantDTO.setType(ParticipantTypeDTO.HUMAN);
+
+        UserProfileAbstract userProfile = createUserProfile("userId", "user1", "user1@test.com");
+        UserProfilePageResult userProfilePageResult = createUserProfilePageResult(userProfile);
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockIdUserProfile)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(userProfilePageResult)));
 
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/participants")
@@ -137,10 +179,11 @@ public class ChatRestControllerTest extends AbstractTest {
         var res = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
-                .body(addParticipant)
+                .body(addParticipantDTO)
                 .post("/{id}/participants")
                 .then()
                 .statusCode(OK.getStatusCode())
@@ -153,13 +196,24 @@ public class ChatRestControllerTest extends AbstractTest {
     public void addParticipantShouldReturnBadRequest() {
         var chatId = "id";
 
-        AddParticipant addParticipant = new AddParticipant();
-        addParticipant.setUserId("userId");
-        addParticipant.setType(ParticipantType.HUMAN);
+        AddParticipantDTO addParticipantDTO = new AddParticipantDTO();
+        addParticipantDTO.setUserId("user1");
+        addParticipantDTO.setType(ParticipantTypeDTO.HUMAN);
+
+        UserProfileAbstract userProfile = createUserProfile("userId", "user1", "user1@test.com");
+        UserProfilePageResult userProfilePageResult = createUserProfilePageResult(userProfile);
 
         ProblemDetailResponse problemDetailResponse = new ProblemDetailResponse();
         problemDetailResponse.setErrorCode(String.valueOf(BAD_REQUEST.getStatusCode()));
         problemDetailResponse.setDetail("Bad Request");
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockIdUserProfile)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(userProfilePageResult)));
 
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/participants")
@@ -172,10 +226,11 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
-                .body(addParticipant)
+                .body(addParticipantDTO)
                 .post("/{id}/participants")
                 .then()
                 .statusCode(BAD_REQUEST.getStatusCode())
@@ -199,6 +254,17 @@ public class ChatRestControllerTest extends AbstractTest {
         chat.setId("chat-id");
         chat.setAppId("app-2");
 
+        UserProfileAbstract creatorProfile = createUserProfile(ADMIN, "Alice User", "alice@test.com");
+        UserProfilePageResult creatorProfilePageResult = createUserProfilePageResult(creatorProfile);
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockIdUserProfile)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(creatorProfilePageResult)));
+
         mockServerClient.when(request()
                 .withPath("/internal/chats")
                 .withMethod(HttpMethod.POST))
@@ -210,7 +276,8 @@ public class ChatRestControllerTest extends AbstractTest {
         var res = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(createChatDTO)
                 .post()
@@ -232,9 +299,20 @@ public class ChatRestControllerTest extends AbstractTest {
         createChatDTO.setId("chat-id");
         createChatDTO.setAppId("app-2");
 
+        UserProfileAbstract creatorProfile = createUserProfile("alice", "Alice User", "alice@test.com");
+        UserProfilePageResult creatorProfilePageResult = createUserProfilePageResult(creatorProfile);
+
         ProblemDetailResponse problemDetailResponse = new ProblemDetailResponse();
         problemDetailResponse.setErrorCode(String.valueOf(BAD_REQUEST.getStatusCode()));
         problemDetailResponse.setDetail("Bad Request");
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockIdUserProfile)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(creatorProfilePageResult)));
 
         mockServerClient.when(request()
                 .withPath("/internal/chats")
@@ -247,7 +325,8 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
                 .contentType(APPLICATION_JSON)
                 .body(createChatDTO)
                 .post()
@@ -296,7 +375,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var res = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .body(createMessageDTO)
@@ -333,7 +412,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .body(createMessageDTO)
@@ -377,7 +456,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .body(createMessageDTO)
@@ -405,7 +484,7 @@ public class ChatRestControllerTest extends AbstractTest {
         given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .pathParam("id", chatId)
                 .delete("{id}")
                 .then()
@@ -432,7 +511,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .delete("{id}")
@@ -475,7 +554,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var res = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .pathParam("id", chatId)
                 .get("/{id}/messages")
                 .then()
@@ -511,7 +590,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .get("/{id}/messages")
@@ -550,7 +629,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var res = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .pathParam("id", chatId)
                 .get("/{id}/participants")
                 .then()
@@ -585,7 +664,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .get("/{id}/participants")
@@ -624,7 +703,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .queryParam("pageNumber", 2)
                 .queryParam("pageSize", 5)
                 .get()
@@ -661,7 +740,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .queryParam("pageNumber", 2)
                 .queryParam("pageSize", 5)
                 .get()
@@ -703,7 +782,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(chatSearchCriteriaDTO)
                 .post("/search")
@@ -738,7 +817,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(chatSearchCriteriaDTO)
                 .post("/search")
@@ -773,7 +852,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var res = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .body(updateChatDTO)
@@ -809,7 +888,7 @@ public class ChatRestControllerTest extends AbstractTest {
         var response = given()
                 .when()
                 .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .pathParam("id", chatId)
                 .body(updateChatDTO)
@@ -822,5 +901,194 @@ public class ChatRestControllerTest extends AbstractTest {
         assertThat(response).isNotNull();
         assertThat(response.getDetail()).isEqualTo("Bad Request");
         assertThat(Integer.valueOf(response.getErrorCode())).isEqualTo(BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
+    public void createChatShouldReturnBadRequestWhenUserProfileNotFound() {
+        CreateChatDTO createChatDTO = new CreateChatDTO();
+        createChatDTO.setType(ChatTypeDTO.AI_CHAT);
+        createChatDTO.setId("chat-id");
+        createChatDTO.setAppId("app-2");
+
+        UserProfilePageResult emptyResult = new UserProfilePageResult();
+        emptyResult.setStream(List.of());
+        emptyResult.setSize(0);
+        emptyResult.setNumber(0);
+        emptyResult.setTotalElements(0L);
+        emptyResult.setTotalPages(0L);
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockIdUserProfile)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(emptyResult)));
+
+        var response = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
+                .contentType(APPLICATION_JSON)
+                .body(createChatDTO)
+                .post()
+                .then()
+                .statusCode(NOT_FOUND.getStatusCode())
+                .extract()
+                .body().as(ProblemDetailResponseDTO.class);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getErrorCode()).isEqualTo("NO_PROFILE_FOUND");
+    }
+
+    @Test
+    public void createChatShouldReturnInternalServerErrorWhenUserProfileServiceFails() {
+        CreateChatDTO createChatDTO = new CreateChatDTO();
+        createChatDTO.setType(ChatTypeDTO.AI_CHAT);
+        createChatDTO.setId("chat-id");
+        createChatDTO.setAppId("app-2");
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockIdUserProfile)
+                .respond(httpRequest -> response().withStatusCode(INTERNAL_SERVER_ERROR.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON));
+
+        var response = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
+                .contentType(APPLICATION_JSON)
+                .body(createChatDTO)
+                .post()
+                .then()
+                .statusCode(INTERNAL_SERVER_ERROR.getStatusCode())
+                .extract();
+
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void addParticipantShouldReturnBadRequestWhenUserProfileNotFound() {
+        var chatId = "id";
+
+        AddParticipantDTO addParticipantDTO = new AddParticipantDTO();
+        addParticipantDTO.setUserName("nonexistent");
+        addParticipantDTO.setType(ParticipantTypeDTO.HUMAN);
+        addParticipantDTO.setUserId("userId");
+
+        UserProfilePageResult emptyResult = new UserProfilePageResult();
+        emptyResult.setStream(List.of());
+        emptyResult.setSize(0);
+        emptyResult.setNumber(0);
+        emptyResult.setTotalElements(0L);
+        emptyResult.setTotalPages(0L);
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockIdUserProfile)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(emptyResult)));
+
+        var response = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
+                .contentType(APPLICATION_JSON)
+                .pathParam("id", chatId)
+                .body(addParticipantDTO)
+                .post("/{id}/participants")
+                .then()
+                .statusCode(NOT_FOUND.getStatusCode())
+                .extract().as(ProblemDetailResponseDTO.class);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getErrorCode()).isEqualTo("NO_PROFILE_FOUND");
+    }
+
+    @Test
+    public void createChatWithParticipantsAndCreatorInList() {
+
+        CreateChatDTO createChatDTO = new CreateChatDTO();
+        createChatDTO.setType(ChatTypeDTO.AI_CHAT);
+        createChatDTO.setId("chat-id");
+        createChatDTO.setAppId("app-2");
+
+        ParticipantDTO creatorParticipantDTO = new ParticipantDTO();
+        creatorParticipantDTO.setUserId("alice");
+        creatorParticipantDTO.setUserName("Old Alice Name");
+        creatorParticipantDTO.setEmail("alice@test.com");
+        creatorParticipantDTO.setType(ParticipantTypeDTO.HUMAN);
+
+        ParticipantDTO participantDTO = new ParticipantDTO();
+        participantDTO.setUserId("bob");
+        participantDTO.setUserName("Bob User");
+        participantDTO.setEmail("bob@test.com");
+        participantDTO.setType(ParticipantTypeDTO.HUMAN);
+
+        createChatDTO.setParticipants(List.of(creatorParticipantDTO, participantDTO));
+
+        Chat chat = new Chat();
+        chat.setType(ChatType.AI_CHAT);
+        chat.setId("chat-id");
+        chat.setAppId("app-2");
+
+        Participant updatedCreatorParticipant = new Participant();
+        updatedCreatorParticipant.setUserId("alice");
+        updatedCreatorParticipant.setUserName("Alice User");
+        updatedCreatorParticipant.setEmail("alice@test.com");
+        updatedCreatorParticipant.setType(ParticipantType.HUMAN);
+
+        Participant participant = new Participant();
+        participant.setUserId("bob");
+        participant.setUserName("Bob User");
+        participant.setEmail("bob@test.com");
+        participant.setType(ParticipantType.HUMAN);
+
+        chat.setParticipants(List.of(updatedCreatorParticipant, participant));
+
+        UserProfileAbstract creatorProfile = createUserProfile("alice", "Alice User", "alice@test.com");
+        UserProfilePageResult creatorProfilePageResult = createUserProfilePageResult(creatorProfile);
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockIdUserProfile)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(creatorProfilePageResult)));
+
+        mockServerClient.when(request()
+                .withPath("/internal/chats")
+                .withMethod(HttpMethod.POST))
+                .withId(mockId)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(chat)));
+
+        var res = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
+                .contentType(APPLICATION_JSON)
+                .body(createChatDTO)
+                .post()
+                .then()
+                .statusCode(OK.getStatusCode())
+                .extract()
+                .body().as(ChatDTO.class);
+
+        assertThat(res).isNotNull();
+        assertThat(res.getType()).isEqualTo(ChatTypeDTO.AI_CHAT);
+        assertThat(res.getId()).isEqualTo("chat-id");
+        assertThat(res.getAppId()).isEqualTo("app-2");
+        assertThat(res.getParticipants().size()).isEqualTo(2);
     }
 }
