@@ -31,10 +31,10 @@ public class UserProfileService {
 
     public UserProfileAbstract getUserAbstractByEmailOrUsername(final String email, final String username) {
         final UserProfileAbstractCriteria criteria = new UserProfileAbstractCriteria();
-        if (Objects.nonNull(email)) {
+        if (Objects.nonNull(email) && !email.isBlank()) {
             criteria.setEmailAddresses(List.of(email));
         }
-        if (Objects.nonNull(username)) {
+        if (Objects.nonNull(username) && !username.isBlank()) {
             criteria.setDisplayNames(List.of(username));
         }
         return performSearchRequest(criteria);
