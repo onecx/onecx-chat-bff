@@ -48,10 +48,11 @@ public interface ParticipantMapper {
 
     default List<ParticipantDTO> updateParticipantWithUserProfile(List<ParticipantDTO> participants,
             UserProfileAbstract userProfile) {
-        return participants.stream().peek(participant -> {
+        return participants.stream().map(participant -> {
             if (participant.getEmail().equals(userProfile.getEmailAddress())) {
                 updateFromUserProfile(participant, userProfile);
             }
+            return participant;
         }).toList();
     }
 }

@@ -45,7 +45,7 @@ public class ChatRestControllerTest extends AbstractTest {
 
     static final String mockId = "MOCK";
     static final String mockIdSecondary = "MOCK_SECONDARY";
-    static final String mockIdUserProfile = "MOCK_USER_PROFILE";
+    static final String MOCK_USER_PROFILE = "MOCK_USER_PROFILE";
 
     static final String USERNAME_TOKEN = "apm-username";
 
@@ -54,7 +54,7 @@ public class ChatRestControllerTest extends AbstractTest {
         try {
             mockServerClient.clear(mockId);
             mockServerClient.clear(mockIdSecondary);
-            mockServerClient.clear(mockIdUserProfile);
+            mockServerClient.clear(MOCK_USER_PROFILE);
         } catch (Exception e) {
             // mockid not existing
         }
@@ -163,7 +163,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockIdUserProfile)
+                .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(userProfilePageResult)));
@@ -210,7 +210,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockIdUserProfile)
+                .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(userProfilePageResult)));
@@ -260,7 +260,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockIdUserProfile)
+                .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(creatorProfilePageResult)));
@@ -309,7 +309,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockIdUserProfile)
+                .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(creatorProfilePageResult)));
@@ -904,7 +904,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void createChatShouldReturnBadRequestWhenUserProfileNotFound() {
+    void createChatShouldReturnBadRequestWhenUserProfileNotFound() {
         CreateChatDTO createChatDTO = new CreateChatDTO();
         createChatDTO.setType(ChatTypeDTO.AI_CHAT);
         createChatDTO.setId("chat-id");
@@ -920,7 +920,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockIdUserProfile)
+                .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(emptyResult)));
@@ -943,7 +943,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void createChatShouldReturnInternalServerErrorWhenUserProfileServiceFails() {
+    void createChatShouldReturnInternalServerErrorWhenUserProfileServiceFails() {
         CreateChatDTO createChatDTO = new CreateChatDTO();
         createChatDTO.setType(ChatTypeDTO.AI_CHAT);
         createChatDTO.setId("chat-id");
@@ -952,7 +952,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockIdUserProfile)
+                .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(INTERNAL_SERVER_ERROR.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON));
 
@@ -972,7 +972,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void addParticipantShouldReturnBadRequestWhenUserProfileNotFound() {
+    void addParticipantShouldReturnBadRequestWhenUserProfileNotFound() {
         var chatId = "id";
 
         AddParticipantDTO addParticipantDTO = new AddParticipantDTO();
@@ -990,7 +990,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockIdUserProfile)
+                .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(emptyResult)));
@@ -1013,7 +1013,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void createChatWithParticipantsAndCreatorInList() {
+    void createChatWithParticipantsAndCreatorInList() {
 
         CreateChatDTO createChatDTO = new CreateChatDTO();
         createChatDTO.setType(ChatTypeDTO.AI_CHAT);
@@ -1059,7 +1059,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockIdUserProfile)
+                .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(creatorProfilePageResult)));
@@ -1089,6 +1089,6 @@ public class ChatRestControllerTest extends AbstractTest {
         assertThat(res.getType()).isEqualTo(ChatTypeDTO.AI_CHAT);
         assertThat(res.getId()).isEqualTo("chat-id");
         assertThat(res.getAppId()).isEqualTo("app-2");
-        assertThat(res.getParticipants().size()).isEqualTo(2);
+        assertThat(res.getParticipants()).hasSize(2);
     }
 }
