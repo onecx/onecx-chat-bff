@@ -3,7 +3,7 @@
         "id" : "2",
         "httpRequest" : {
             "headers" : {
-                "apm-principal-token" : [
+                "apm-username": [
                     "alice"
                 ]
             },
@@ -13,7 +13,7 @@
             "body" : {
                 "type" : "JSON",
                 "json" : {
-                    "appId" : "onecx-theme-bff",
+                    "appId" : "onecx-chat-bff",
                     "permissions" : {
                         "chat" : [
                             "read",
@@ -44,7 +44,7 @@
         "id" : "3",
         "httpRequest" : {
             "headers" : {
-                "apm-principal-token" : [
+                "apm-username": [
                     "bob"
                 ]
             },
@@ -54,7 +54,7 @@
             "body" : {
                 "type" : "JSON",
                 "json" : {
-                    "appId" : "onecx-theme-bff",
+                    "appId" : "onecx-chat-bff",
                     "permissions" : {
                         "chat" : [
                             "read"

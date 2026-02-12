@@ -18,6 +18,7 @@ quarkus.http.auth.permission.default.paths=/*
 quarkus.http.auth.permission.default.policy=authenticated
 org.eclipse.microprofile.rest.client.propagateHeaders=apm-principal-token
 %prod.quarkus.rest-client.onecx_chat_svc.url=http://onecx-chat-svc:8080
+%prod.quarkus.rest-client.onecx_user_profile_svc_v1_yaml.url=http://onecx-user-profile-svc:8080
 quarkus.openapi-generator.codegen.input-base-dir=target/tmp/openapi
 quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.config-key=onecx_chat_svc
 quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.base-package=gen.org.tkit.onecx.chat.clients
@@ -25,7 +26,11 @@ quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.return-r
 quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.additional-api-type-annotations=@org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.additional-model-type-annotations=@io.quarkus.runtime.annotations.RegisterForReflection;
 quarkus.openapi-generator.codegen.spec.onecx_chat_internal_openapi_yaml.enable-security-generation=false
+quarkus.openapi-generator.codegen.spec.onecx_user_profile_svc_v1_yaml.config-key=onecx_user_profile_svc_v1_yaml
+quarkus.openapi-generator.codegen.spec.onecx_user_profile_svc_v1_yaml.base-package=org.openapi.quarkus.onecx_user_profile_svc_v1_yaml
+quarkus.openapi-generator.codegen.spec.onecx_user_profile_svc_v1_yaml.enable-security-generation=false
 %prod.quarkus.rest-client.onecx_chat_svc.providers=io.quarkus.oidc.client.reactive.filter.OidcClientRequestReactiveFilter
+%prod.quarkus.rest-client.onecx_user_profile_svc_v1_yaml.providers=io.quarkus.oidc.client.reactive.filter.OidcClientRequestReactiveFilter
 %prod.quarkus.oidc-client.client-id=${quarkus.application.name}
 ----
 ====
@@ -71,5 +76,5 @@ app:
         enabled: true
         spec:
           kcConfig:
-            defaultClientScopes: [ ocx-chat:all, ocx-pm:read ]
+            defaultClientScopes: [ ocx-chat:all, ocx-pm:read, ocx-up:read ]
 ----
