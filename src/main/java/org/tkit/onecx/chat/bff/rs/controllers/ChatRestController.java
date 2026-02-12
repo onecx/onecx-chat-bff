@@ -13,9 +13,9 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
-import org.tkit.onecx.chat.bff.domain.exception.NoUserProfileException;
+import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfileAbstractCriteria;
+import org.tkit.onecx.chat.bff.domain.model.ErrorCodeEnum;
 import org.tkit.onecx.chat.bff.domain.service.UserProfileService;
-import org.tkit.onecx.chat.bff.rs.helper.RequestBuilderHelper;
 import org.tkit.onecx.chat.bff.rs.mappers.*;
 import org.tkit.quarkus.context.ApplicationContext;
 
@@ -50,16 +50,19 @@ public class ChatRestController implements ChatsApiService {
     UserProfileService userProfileService;
 
     @Inject
-    RequestBuilderHelper requestBuilder;
+    UserProfileMapper userProfileMapper;
 
     List<ChatDTO> chats = new ArrayList<>();
 
     @Override
     public Response addParticipant(String chatId, AddParticipantDTO addParticipantDTO) {
-        var participantProfile = userProfileService.getUserAbstractByEmailOrUsername(addParticipantDTO.getEmail(),
-                addParticipantDTO.getUserName());
-        var request = requestBuilder.getAddParticipantRequest(addParticipantDTO, participantProfile);
-        try (Response ignored = client.addParticipant(chatId, request)) {
+        var userCriteria = userProfileMapper.mapToCriteria(addParticipantDTO);
+        var participantProfile = userProfileService.performSearchRequest(userCriteria);
+        if (participantProfile.isEmpty()) {
+            return getProfileNotFoundResponse();
+        }
+        participantMapper.updateFromUserProfile(addParticipantDTO, participantProfile.get());
+        try (Response ignored = client.addParticipant(chatId, participantMapper.map(addParticipantDTO))) {
             return Response.status(Response.Status.OK).build();
         }
     }
@@ -67,9 +70,16 @@ public class ChatRestController implements ChatsApiService {
     @Override
     public Response createChat(CreateChatDTO createChatDTO) {
         var userId = ApplicationContext.get().getPrincipal();
-        var creatorProfile = userProfileService.getUserAbstractById(userId);
-        var request = requestBuilder.getCreateChatDtoRequest(createChatDTO, creatorProfile);
-        try (Response response = client.createChat(request)) {
+        var criteria = new UserProfileAbstractCriteria();
+        criteria.setUserIds(List.of(userId));
+        var creatorProfile = userProfileService.performSearchRequest(criteria);
+        if (creatorProfile.isEmpty()) {
+            return getProfileNotFoundResponse();
+        }
+        var updatedParticipants = participantMapper.updateParticipantWithUserProfile(createChatDTO.getParticipants(),
+                creatorProfile.get());
+        createChatDTO.setParticipants(updatedParticipants);
+        try (Response response = client.createChat(mapper.map(createChatDTO))) {
             Chat c = response.readEntity(Chat.class);
             return Response.status(Response.Status.OK).entity(mapper.map(c)).build();
         }
@@ -174,8 +184,8 @@ public class ChatRestController implements ChatsApiService {
         return exceptionMapper.constraint(ex);
     }
 
-    @ServerExceptionMapper
-    public RestResponse<ProblemDetailResponseDTO> noUserProfile(NoUserProfileException ex) {
-        return RestResponse.status(RestResponse.Status.NOT_FOUND, exceptionMapper.noProfileFound(ex));
+    private Response getProfileNotFoundResponse() {
+        var body = exceptionMapper.exception(ErrorCodeEnum.NO_PROFILE_FOUND.name(), "User profile not found");
+        return Response.status(Response.Status.NOT_FOUND).entity(body).build();
     }
 }

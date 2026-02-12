@@ -34,4 +34,24 @@ public interface ParticipantMapper {
     @Mapping(target = "modificationDate", ignore = true)
     @Mapping(target = "modificationUser", ignore = true)
     void updateFromUserProfile(@MappingTarget ParticipantDTO participantDTO, UserProfileAbstract user);
+
+    @Mapping(source = "displayName", target = "userName")
+    @Mapping(source = "emailAddress", target = "email")
+    @Mapping(target = "version", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "type", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "creationUser", ignore = true)
+    @Mapping(target = "modificationDate", ignore = true)
+    @Mapping(target = "modificationUser", ignore = true)
+    void updateFromUserProfile(@MappingTarget AddParticipantDTO participantDTO, UserProfileAbstract user);
+
+    default List<ParticipantDTO> updateParticipantWithUserProfile(List<ParticipantDTO> participants,
+            UserProfileAbstract userProfile) {
+        return participants.stream().peek(participant -> {
+            if (participant.getEmail().equals(userProfile.getEmailAddress())) {
+                updateFromUserProfile(participant, userProfile);
+            }
+        }).toList();
+    }
 }

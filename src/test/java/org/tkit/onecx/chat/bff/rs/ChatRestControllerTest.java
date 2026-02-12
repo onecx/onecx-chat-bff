@@ -965,7 +965,7 @@ public class ChatRestControllerTest extends AbstractTest {
                 .body(createChatDTO)
                 .post()
                 .then()
-                .statusCode(INTERNAL_SERVER_ERROR.getStatusCode())
+                .statusCode(BAD_REQUEST.getStatusCode())
                 .extract();
 
         assertThat(response).isNotNull();
