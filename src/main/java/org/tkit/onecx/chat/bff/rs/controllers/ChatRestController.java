@@ -158,6 +158,14 @@ public class ChatRestController implements ChatsApiService {
         }
     }
 
+    public Response searchChatMessages(ChatMessageSearchCriteriaDTO chatMessageSearchCriteriaDTO) {
+        try (Response response = client.searchChatMessages(mapper.map(chatMessageSearchCriteriaDTO))) {
+            ChatMessageResponse chatMessageResponse = response.readEntity(ChatMessageResponse.class);
+            ChatMessageResponseDTO chatMessageResponseDTO = mapper.map(chatMessageResponse);
+            return Response.status(Response.Status.OK).entity(chatMessageResponseDTO).build();
+        }
+    }
+
     @Override
     public Response updateChat(String id, UpdateChatDTO updateChatDTO) {
         try (Response response = client.updateChat(id, mapper.map(updateChatDTO))) {

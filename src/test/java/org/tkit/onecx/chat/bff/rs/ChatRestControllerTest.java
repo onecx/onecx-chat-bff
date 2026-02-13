@@ -832,6 +832,85 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
+    public void searchChatMessagesTest() {
+        ChatDTO chatDTO = new ChatDTO();
+        chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
+        chatDTO.setId(mockId);
+
+        ParticipantDTO participantDTO = new ParticipantDTO();
+        participantDTO.setType(ParticipantTypeDTO.HUMAN);
+        participantDTO.setUserName("user1");
+        List<ParticipantDTO> participantDTOList = new ArrayList<>();
+        participantDTOList.add(participantDTO);
+        chatDTO.setParticipants(participantDTOList);
+
+        MessageDTO messageDTO = new MessageDTO();
+        messageDTO.setType(MessageTypeDTO.HUMAN);
+        messageDTO.setText("Hello");
+        messageDTO.setId("msg1");
+        List<MessageDTO> messages = new ArrayList<>();
+        messages.add(messageDTO);
+
+        ChatMessageResponseDTO chatMessageResponseDTO = new ChatMessageResponseDTO();
+        MessagePageResultDTO messagePageResultDTO = new MessagePageResultDTO();
+        messagePageResultDTO.setNumber(2);
+        messagePageResultDTO.setSize(5);
+        messagePageResultDTO.setStream(messages);
+        chatMessageResponseDTO.setParticipants(participantDTOList);
+        chatMessageResponseDTO.setMessages(messagePageResultDTO);
+
+        ChatMessageSearchCriteriaDTO chatMessageSearchCriteriaDTO = new ChatMessageSearchCriteriaDTO();
+        chatMessageSearchCriteriaDTO.setChatId(mockId);
+
+        mockServerClient.when(request()
+                .withPath("/internal/chats/messages/search")
+                .withMethod(HttpMethod.POST))
+                .withId(mockId)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(chatMessageResponseDTO)));
+
+        var response = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(chatMessageSearchCriteriaDTO)
+                .post("/messages/search")
+                .then()
+                .statusCode(OK.getStatusCode())
+                .extract()
+                .body().as(ChatMessageResponseDTO.class);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getMessages().getStream()).isNotNull().hasSize(1);
+        assertThat(response.getMessages().getStream().get(0).getType()).isEqualTo(MessageTypeDTO.HUMAN);
+        assertThat(response.getParticipants()).isNotNull().hasSize(1);
+        assertThat(response.getParticipants().get(0).getType()).isEqualTo(ParticipantTypeDTO.HUMAN);
+        assertThat(response.getParticipants().get(0).getUserName()).isEqualTo("user1");
+    }
+
+    @Test
+    void searchChatMessagesShouldReturnBadRequest() {
+
+        ChatMessageSearchCriteriaDTO chatMessageSearchCriteriaDTO = new ChatMessageSearchCriteriaDTO();
+
+        var response = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(chatMessageSearchCriteriaDTO)
+                .post("/messages/search")
+                .then()
+                .statusCode(BAD_REQUEST.getStatusCode())
+                .extract()
+                .body().as(ProblemDetailResponse.class);
+
+        assertThat(response).isNotNull();
+    }
+
+    @Test
     public void updateChatTest() {
         var chatId = "id";
 
