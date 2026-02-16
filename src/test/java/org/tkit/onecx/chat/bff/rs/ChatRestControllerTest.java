@@ -50,7 +50,7 @@ public class ChatRestControllerTest extends AbstractTest {
     static final String USERNAME_TOKEN = "apm-username";
 
     @BeforeEach
-    public void resetExpectation() {
+    void resetExpectation() {
         try {
             mockServerClient.clear(mockId);
             mockServerClient.clear(mockIdSecondary);
@@ -79,7 +79,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getChatChatByIdTest() {
+    void getChatChatByIdTest() {
         var chatId = "id";
 
         ChatDTO chatDTO = new ChatDTO();
@@ -113,7 +113,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getChatById_shouldReturnBadRequest() {
+    void getChatById_shouldReturnBadRequest() {
         var chatId = "id";
 
         ProblemDetailResponse problemDetailResponse = new ProblemDetailResponse();
@@ -144,7 +144,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void addParticipantTest() {
+    void addParticipantTest() {
         var chatId = "id";
         AddParticipant addParticipant = new AddParticipant();
         addParticipant.setUserId("userId");
@@ -193,7 +193,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void addParticipantShouldReturnBadRequest() {
+    void addParticipantShouldReturnBadRequest() {
         var chatId = "id";
 
         AddParticipantDTO addParticipantDTO = new AddParticipantDTO();
@@ -242,7 +242,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void createChatTest() {
+    void createChatTest() {
 
         CreateChatDTO createChatDTO = new CreateChatDTO();
         createChatDTO.setType(ChatTypeDTO.AI_CHAT);
@@ -293,7 +293,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void createChatShouldReturnBadRequest() {
+    void createChatShouldReturnBadRequest() {
         CreateChatDTO createChatDTO = new CreateChatDTO();
         createChatDTO.setType(ChatTypeDTO.AI_CHAT);
         createChatDTO.setId("chat-id");
@@ -341,7 +341,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void createChatMessageTest() {
+    void createChatMessageTest() {
         var chatId = "id";
 
         CreateMessageDTO createMessageDTO = new CreateMessageDTO();
@@ -390,7 +390,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void createChatMessageShouldReturnBadRequest() {
+    void createChatMessageShouldReturnBadRequest() {
 
         var chatId = "id";
 
@@ -428,7 +428,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getChatMessagesShouldReturnBadRequestWhenCallingGetParticipants() {
+    void getChatMessagesShouldReturnBadRequestWhenCallingGetParticipants() {
         var chatId = "id";
 
         CreateMessageDTO createMessageDTO = new CreateMessageDTO();
@@ -472,7 +472,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void deleteChatTest() {
+    void deleteChatTest() {
         var chatId = "id";
 
         mockServerClient.when(request()
@@ -492,7 +492,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void deleteChatShouldReturnBadRequest() {
+    void deleteChatShouldReturnBadRequest() {
 
         var chatId = "id";
 
@@ -526,7 +526,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getChatMessagesTest() {
+    void getChatMessagesTest() {
         var chatId = "id";
 
         Message message = new Message();
@@ -571,7 +571,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getChatMessagesShouldReturnBadRequest() {
+    void getChatMessagesShouldReturnBadRequest() {
 
         var chatId = "id";
 
@@ -605,7 +605,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getChatParticipantsTest() {
+    void getChatParticipantsTest() {
         var chatId = "id";
 
         Participant participant = new Participant();
@@ -645,7 +645,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getChatParticipantsShouldReturnBadRequest() {
+    void getChatParticipantsShouldReturnBadRequest() {
 
         var chatId = "id";
 
@@ -679,7 +679,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getChatsTest() {
+    void getChatsTest() {
 
         ChatDTO chatDTO = new ChatDTO();
         chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
@@ -756,7 +756,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void searchChatsTest() {
+    void searchChatsTest() {
         ChatDTO chatDTO = new ChatDTO();
         chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
 
@@ -832,7 +832,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void searchChatMessagesTest() {
+    void searchChatMessagesTest() {
         ChatDTO chatDTO = new ChatDTO();
         chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
         chatDTO.setId(mockId);
@@ -911,7 +911,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void updateChatTest() {
+    void updateChatTest() {
         var chatId = "id";
 
         UpdateChatDTO updateChatDTO = new UpdateChatDTO();
@@ -947,7 +947,7 @@ public class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
-    public void updateChatShouldReturnBadRequest() {
+    void updateChatShouldReturnBadRequest() {
         var chatId = "id";
 
         UpdateChatDTO updateChatDTO = new UpdateChatDTO();
