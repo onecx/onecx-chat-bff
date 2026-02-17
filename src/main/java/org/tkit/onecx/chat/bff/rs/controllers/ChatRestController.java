@@ -151,7 +151,10 @@ public class ChatRestController implements ChatsApiService {
 
     @Override
     public Response searchChats(ChatSearchCriteriaDTO chatSearchCriteriaDTO) {
-        try (Response response = client.searchChats(mapper.map(chatSearchCriteriaDTO))) {
+        var userId = ApplicationContext.get().getPrincipal();
+        ChatSearchCriteria chatSearchCriteria = mapper.map(chatSearchCriteriaDTO);
+        chatSearchCriteria.participant(userId);
+        try (Response response = client.searchChats(chatSearchCriteria)) {
             ChatPageResult result = response.readEntity(ChatPageResult.class);
             ChatPageResultDTO resultDTO = mapper.map(result);
             return Response.status(Response.Status.OK).entity(resultDTO).build();

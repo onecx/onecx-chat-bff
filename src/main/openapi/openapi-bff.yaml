@@ -420,9 +420,6 @@ components:
           type: string       
         appId:
           type: string
-        userId:
-          type: string
-          description: userId of the chat owner/creator
         pageNumber:
           format: int32
           description: The number of page.
