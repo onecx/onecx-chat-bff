@@ -79,7 +79,7 @@ public class ChatRestController implements ChatsApiService {
         var updatedParticipants = participantMapper.updateParticipantWithUserProfile(createChatDTO.getParticipants(),
                 creatorProfile.get());
         createChatDTO.setParticipants(updatedParticipants);
-        try (Response response = client.createChat(mapper.map(createChatDTO))) {
+        try (Response response = client.createChat(mapper.map(createChatDTO, userId))) {
             Chat c = response.readEntity(Chat.class);
             return Response.status(Response.Status.OK).entity(mapper.map(c)).build();
         }
