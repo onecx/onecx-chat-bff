@@ -13,7 +13,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
-import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfileAbstractCriteria;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstractCriteria;
 import org.tkit.onecx.chat.bff.domain.model.ErrorCodeEnum;
 import org.tkit.onecx.chat.bff.domain.service.UserProfileService;
 import org.tkit.onecx.chat.bff.rs.mappers.*;
@@ -79,7 +79,7 @@ public class ChatRestController implements ChatsApiService {
         var updatedParticipants = participantMapper.updateParticipantWithUserProfile(createChatDTO.getParticipants(),
                 creatorProfile.get());
         createChatDTO.setParticipants(updatedParticipants);
-        try (Response response = client.createChat(mapper.map(createChatDTO))) {
+        try (Response response = client.createChat(mapper.map(createChatDTO, userId))) {
             Chat c = response.readEntity(Chat.class);
             return Response.status(Response.Status.OK).entity(mapper.map(c)).build();
         }

@@ -19,8 +19,8 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Header;
 import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
-import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfileAbstract;
-import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfilePageResult;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstract;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfilePageResult;
 import org.tkit.onecx.chat.bff.rs.controllers.ChatRestController;
 import org.tkit.quarkus.log.cdi.LogService;
 

@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfileAbstractCriteria;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstractCriteria;
 
 import gen.org.tkit.onecx.chat.bff.rs.internal.model.AddParticipantDTO;
 
