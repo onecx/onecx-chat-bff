@@ -4,12 +4,13 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.api.UserProfileV1Api;
-import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfileAbstract;
-import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfileAbstractCriteria;
-import org.openapi.quarkus.onecx_user_profile_svc_v1_yaml.model.UserProfilePageResult;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.api.UserProfileV1Api;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstract;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstractCriteria;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfilePageResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,9 +22,11 @@ public class UserProfileService {
     @RestClient
     UserProfileV1Api userProfileClient;
 
-    public Optional<UserProfileAbstract> performSearchRequest(final UserProfileAbstractCriteria criteria) {
+    public Optional<UserProfileAbstract> performSearchRequest(UserProfileAbstractCriteria criteria) {
         UserProfilePageResult result;
-        result = userProfileClient.searchProfileAbstractsByCriteria(criteria);
+        try (Response response = userProfileClient.searchProfileAbstractsByCriteria(criteria)) {
+            result = response.readEntity(UserProfilePageResult.class);
+        }
         if (result.getStream().isEmpty()) {
             return Optional.empty();
         }
