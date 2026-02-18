@@ -1,4 +1,4 @@
-package org.tkit.onecx.chat.bff.rs;
+package org.tkit.onecx.chat.bff.rs.controllers;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -21,7 +21,7 @@ import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
 import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstract;
 import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfilePageResult;
-import org.tkit.onecx.chat.bff.rs.controllers.ChatRestController;
+import org.tkit.onecx.chat.bff.rs.AbstractTest;
 import org.tkit.quarkus.log.cdi.LogService;
 
 import gen.org.tkit.onecx.chat.bff.rs.internal.model.*;
@@ -1169,5 +1169,22 @@ public class ChatRestControllerTest extends AbstractTest {
         assertThat(res.getId()).isEqualTo("chat-id");
         assertThat(res.getAppId()).isEqualTo("app-2");
         assertThat(res.getParticipants()).hasSize(2);
+    }
+
+    @Test
+    void removeParticipantThrowsExceptionTest() {
+        String chatId = "testChatId";
+        String participantId = "testParticipantId";
+
+        var response = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
+                .delete("/{chatId}/participants/{participantId}", chatId, participantId)
+                .then()
+                .statusCode(500);
+
+        assertThat(response).isNotNull();
     }
 }

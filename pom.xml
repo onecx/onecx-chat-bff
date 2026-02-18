@@ -129,6 +129,19 @@
             <artifactId>quarkus-test-keycloak-server</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit</groupId>
+            <artifactId>junit-bom</artifactId>
+            <version>5.10.2</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
     </dependencies>
 
 
