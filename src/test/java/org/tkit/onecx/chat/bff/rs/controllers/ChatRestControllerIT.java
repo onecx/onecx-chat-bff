@@ -1,4 +1,4 @@
-package org.tkit.onecx.chat.bff.rs;
+package org.tkit.onecx.chat.bff.rs.controllers;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
