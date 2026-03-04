@@ -1,4 +1,4 @@
-package org.tkit.onecx.chat.bff.rs;
+package org.tkit.onecx.chat.bff.rs.controllers;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -21,7 +21,7 @@ import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
 import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstract;
 import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfilePageResult;
-import org.tkit.onecx.chat.bff.rs.controllers.ChatRestController;
+import org.tkit.onecx.chat.bff.rs.AbstractTest;
 import org.tkit.quarkus.log.cdi.LogService;
 
 import gen.org.tkit.onecx.chat.bff.rs.internal.model.*;
@@ -36,15 +36,15 @@ import io.restassured.common.mapper.TypeRef;
 @QuarkusTest
 @LogService
 @TestHTTPEndpoint(ChatRestController.class)
-public class ChatRestControllerTest extends AbstractTest {
+class ChatRestControllerTest extends AbstractTest {
 
     @InjectMockServerClient
     public MockServerClient mockServerClient;
 
     KeycloakTestClient keycloakTestClient = new KeycloakTestClient();
 
-    static final String mockId = "MOCK";
-    static final String mockIdSecondary = "MOCK_SECONDARY";
+    static final String MOCK_ID = "MOCK";
+    static final String MOCK_ID_SECONDARY = "MOCK_SECONDARY";
     static final String MOCK_USER_PROFILE = "MOCK_USER_PROFILE";
 
     static final String USERNAME_TOKEN = "apm-username";
@@ -52,8 +52,8 @@ public class ChatRestControllerTest extends AbstractTest {
     @BeforeEach
     void resetExpectation() {
         try {
-            mockServerClient.clear(mockId);
-            mockServerClient.clear(mockIdSecondary);
+            mockServerClient.clear(MOCK_ID);
+            mockServerClient.clear(MOCK_ID_SECONDARY);
             mockServerClient.clear(MOCK_USER_PROFILE);
         } catch (Exception e) {
             // mockid not existing
@@ -89,7 +89,7 @@ public class ChatRestControllerTest extends AbstractTest {
                 .when(request()
                         .withPath("/internal/chats/" + chatId)
                         .withMethod(HttpMethod.GET))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withHeaders(new Header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON))
                         .withContentType(MediaType.APPLICATION_JSON)
@@ -123,7 +123,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId)
                 .withMethod(HttpMethod.GET))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withBody(JsonBody.json(problemDetailResponse)));
 
@@ -171,7 +171,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/participants")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(addParticipant)));
@@ -218,7 +218,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/participants")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -268,7 +268,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(chat)));
@@ -317,7 +317,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -360,14 +360,14 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/messages")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(CREATED.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON));
 
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/participants")
                 .withMethod(HttpMethod.GET))
-                .withId(mockIdSecondary)
+                .withId(MOCK_ID_SECONDARY)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(participants)));
@@ -404,7 +404,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/messages")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -441,14 +441,14 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/messages")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(CREATED.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON));
 
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/participants")
                 .withMethod(HttpMethod.GET))
-                .withId(mockIdSecondary)
+                .withId(MOCK_ID_SECONDARY)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -478,7 +478,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId)
                 .withMethod(HttpMethod.DELETE))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(NO_CONTENT.getStatusCode()));
 
         given()
@@ -503,7 +503,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId)
                 .withMethod(HttpMethod.DELETE))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -546,7 +546,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/messages")
                 .withMethod(HttpMethod.GET))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(messages)));
@@ -564,7 +564,6 @@ public class ChatRestControllerTest extends AbstractTest {
                 .as(new TypeRef<List<MessageDTO>>() {
                 });
 
-        assertThat(res).isNotNull();
         assertThat(res).isNotNull().isNotEmpty().hasSize(2);
         assertThat(res.get(0).getType()).isEqualTo(MessageTypeDTO.HUMAN);
         assertThat(res.get(1).getType()).isEqualTo(MessageTypeDTO.ASSISTANT);
@@ -582,7 +581,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/messages")
                 .withMethod(HttpMethod.GET))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -621,7 +620,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/participants")
                 .withMethod(HttpMethod.GET))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(participants)));
@@ -638,7 +637,6 @@ public class ChatRestControllerTest extends AbstractTest {
                 .body().as(new TypeRef<List<ParticipantDTO>>() {
                 });
 
-        assertThat(res).isNotNull();
         assertThat(res).isNotNull().isNotEmpty().hasSize(2);
         assertThat(res.get(0).getType()).isEqualTo(ParticipantTypeDTO.HUMAN);
         assertThat(res.get(1).getType()).isEqualTo(ParticipantTypeDTO.ASSISTANT);
@@ -656,7 +654,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId + "/participants")
                 .withMethod(HttpMethod.GET))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -695,7 +693,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats")
                 .withMethod(HttpMethod.GET))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(chatPageResultDTO)));
@@ -732,7 +730,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats")
                 .withMethod(HttpMethod.GET))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -774,7 +772,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(chatPageResultDTO)));
@@ -809,7 +807,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(problemDetailResponse)));
@@ -835,7 +833,7 @@ public class ChatRestControllerTest extends AbstractTest {
     void searchChatMessagesTest() {
         ChatDTO chatDTO = new ChatDTO();
         chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
-        chatDTO.setId(mockId);
+        chatDTO.setId(MOCK_ID);
 
         ParticipantDTO participantDTO = new ParticipantDTO();
         participantDTO.setType(ParticipantTypeDTO.HUMAN);
@@ -860,12 +858,12 @@ public class ChatRestControllerTest extends AbstractTest {
         chatMessageResponseDTO.setMessages(messagePageResultDTO);
 
         ChatMessageSearchCriteriaDTO chatMessageSearchCriteriaDTO = new ChatMessageSearchCriteriaDTO();
-        chatMessageSearchCriteriaDTO.setChatId(mockId);
+        chatMessageSearchCriteriaDTO.setChatId(MOCK_ID);
 
         mockServerClient.when(request()
                 .withPath("/internal/chats/messages/search")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(chatMessageResponseDTO)));
@@ -923,7 +921,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId)
                 .withMethod(HttpMethod.PUT))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(chat)));
@@ -960,7 +958,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats/" + chatId)
                 .withMethod(HttpMethod.PUT))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(BAD_REQUEST.getStatusCode())
                         .withBody(JsonBody.json(problemDetailResponse)));
 
@@ -1146,7 +1144,7 @@ public class ChatRestControllerTest extends AbstractTest {
         mockServerClient.when(request()
                 .withPath("/internal/chats")
                 .withMethod(HttpMethod.POST))
-                .withId(mockId)
+                .withId(MOCK_ID)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(chat)));
@@ -1169,5 +1167,23 @@ public class ChatRestControllerTest extends AbstractTest {
         assertThat(res.getId()).isEqualTo("chat-id");
         assertThat(res.getAppId()).isEqualTo("app-2");
         assertThat(res.getParticipants()).hasSize(2);
+    }
+
+    @Test
+    void removeParticipantThrowsExceptionTest() {
+        //adjust test when participant removal in SVC will be implemented in Controller
+        String chatId = "testChatId";
+        String participantId = "testParticipantId";
+
+        var response = given()
+                .when()
+                .auth().oauth2(keycloakClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, createToken(ADMIN, "org1"))
+                .delete("/{chatId}/participants/{participantId}", chatId, participantId)
+                .then()
+                .statusCode(500);
+
+        assertThat(response).isNotNull();
     }
 }

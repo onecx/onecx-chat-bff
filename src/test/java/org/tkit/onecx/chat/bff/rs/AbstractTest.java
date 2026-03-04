@@ -28,7 +28,7 @@ public abstract class AbstractTest {
 
     protected static final String USER = "bob";
 
-    KeycloakTestClient keycloakClient = new KeycloakTestClient();
+    public KeycloakTestClient keycloakClient = new KeycloakTestClient();
 
     protected static final String APM_HEADER_PARAM = ConfigProvider.getConfig()
             .getValue("%test.tkit.rs.context.token.header-param", String.class);
