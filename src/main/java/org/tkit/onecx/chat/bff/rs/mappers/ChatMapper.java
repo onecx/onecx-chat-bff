@@ -9,10 +9,8 @@ import gen.org.tkit.onecx.chat.clients.model.*;
 
 @Mapper(uses = { OffsetDateTimeMapper.class })
 public interface ChatMapper {
+    @Mapping(target = "participants", ignore = true)
     CreateChat map(CreateChatDTO createChatDTO, String userId);
-
-    @Mapping(target = "removeParticipantsItem", ignore = true)
-    CreateChatDTO map(CreateChat createChat);
 
     Chat map(ChatDTO chatDTO);
 

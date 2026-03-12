@@ -20,6 +20,7 @@ import org.mockserver.model.Header;
 import org.mockserver.model.JsonBody;
 import org.mockserver.model.MediaType;
 import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstract;
+import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfileAbstractCriteria;
 import org.openapi.quarkus.onecx.user.profile.svc.v1.client.model.UserProfilePageResult;
 import org.tkit.onecx.chat.bff.rs.AbstractTest;
 import org.tkit.quarkus.log.cdi.LogService;
@@ -1097,19 +1098,7 @@ class ChatRestControllerTest extends AbstractTest {
         createChatDTO.setId("chat-id");
         createChatDTO.setAppId("app-2");
 
-        ParticipantDTO creatorParticipantDTO = new ParticipantDTO();
-        creatorParticipantDTO.setUserId("alice");
-        creatorParticipantDTO.setUserName("Old Alice Name");
-        creatorParticipantDTO.setEmail("alice@test.com");
-        creatorParticipantDTO.setType(ParticipantTypeDTO.HUMAN);
-
-        ParticipantDTO participantDTO = new ParticipantDTO();
-        participantDTO.setUserId("bob");
-        participantDTO.setUserName("Bob User");
-        participantDTO.setEmail("bob@test.com");
-        participantDTO.setType(ParticipantTypeDTO.HUMAN);
-
-        createChatDTO.setParticipants(List.of(creatorParticipantDTO, participantDTO));
+        createChatDTO.setParticipants(List.of("bob@test.com"));
 
         Chat chat = new Chat();
         chat.setType(ChatType.AI_CHAT);
@@ -1133,13 +1122,26 @@ class ChatRestControllerTest extends AbstractTest {
         UserProfileAbstract creatorProfile = createUserProfile("alice", "Alice User", "alice@test.com");
         UserProfilePageResult creatorProfilePageResult = createUserProfilePageResult(creatorProfile);
 
+        UserProfileAbstract participantProfile = createUserProfile("bob", "Bob User", "bob@test.com");
+        UserProfilePageResult participantProfilePageResult = createUserProfilePageResult(participantProfile);
+
         mockServerClient.when(request()
                 .withPath("/v1/userProfile/search")
-                .withMethod(HttpMethod.POST))
+                .withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(new UserProfileAbstractCriteria().userIds(List.of("alice")))))
                 .withId(MOCK_USER_PROFILE)
                 .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
                         .withContentType(MediaType.APPLICATION_JSON)
                         .withBody(JsonBody.json(creatorProfilePageResult)));
+
+        mockServerClient.when(request()
+                .withPath("/v1/userProfile/search")
+                .withMethod(HttpMethod.POST)
+                .withBody(JsonBody.json(new UserProfileAbstractCriteria().emailAddresses(List.of("bob@test.com")))))
+                .withId("mock-user-profile-bob")
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(participantProfilePageResult)));
 
         mockServerClient.when(request()
                 .withPath("/internal/chats")
