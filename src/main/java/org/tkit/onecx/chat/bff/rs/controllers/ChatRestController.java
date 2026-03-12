@@ -61,7 +61,7 @@ public class ChatRestController implements ChatsApiService {
         if (participantProfile.isEmpty()) {
             return getProfileNotFoundResponse();
         }
-        participantMapper.updateFromUserProfile(addParticipantDTO, participantProfile.get());
+        participantMapper.updateFromUserProfile(addParticipantDTO, participantProfile.get().get(0));
         try (Response ignored = client.addParticipant(chatId, participantMapper.map(addParticipantDTO))) {
             return Response.status(Response.Status.OK).build();
         }
@@ -69,6 +69,8 @@ public class ChatRestController implements ChatsApiService {
 
     @Override
     public Response createChat(CreateChatDTO createChatDTO) {
+        // chat creator
+        List<Participant> participantList = new ArrayList<>();
         var userId = ApplicationContext.get().getPrincipal();
         var criteria = new UserProfileAbstractCriteria();
         criteria.setUserIds(List.of(userId));
@@ -76,9 +78,18 @@ public class ChatRestController implements ChatsApiService {
         if (creatorProfile.isEmpty()) {
             return getProfileNotFoundResponse();
         }
-        var updatedParticipants = participantMapper.updateParticipantWithUserProfile(createChatDTO.getParticipants(),
-                creatorProfile.get());
-        createChatDTO.setParticipants(updatedParticipants);
+
+        participantList.add(participantMapper.mapFromUserProfile(creatorProfile.get().get(0)));
+
+        // other participants
+        criteria = new UserProfileAbstractCriteria().emailAddresses(createChatDTO.getParticipants());
+        var otherParticipants = userProfileService.performSearchRequest(criteria);
+        otherParticipants.ifPresent(
+                userProfileAbstracts -> participantList
+                        .addAll(participantMapper.mapFromUserProfiles(userProfileAbstracts)));
+
+        var chatToCreate = mapper.map(createChatDTO, userId);
+        chatToCreate.setParticipants(participantList);
         try (Response response = client.createChat(mapper.map(createChatDTO, userId))) {
             Chat c = response.readEntity(Chat.class);
             return Response.status(Response.Status.OK).entity(mapper.map(c)).build();

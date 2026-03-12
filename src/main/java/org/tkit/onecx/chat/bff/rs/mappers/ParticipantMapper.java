@@ -11,6 +11,7 @@ import gen.org.tkit.onecx.chat.bff.rs.internal.model.AddParticipantDTO;
 import gen.org.tkit.onecx.chat.bff.rs.internal.model.ParticipantDTO;
 import gen.org.tkit.onecx.chat.clients.model.AddParticipant;
 import gen.org.tkit.onecx.chat.clients.model.Participant;
+import gen.org.tkit.onecx.chat.clients.model.ParticipantType;
 
 @Mapper
 public interface ParticipantMapper {
@@ -55,4 +56,16 @@ public interface ParticipantMapper {
             return participant;
         }).toList();
     }
+
+    List<Participant> mapFromUserProfiles(List<UserProfileAbstract> userProfileAbstracts);
+
+    default Participant mapFromUserProfile(UserProfileAbstract userProfileAbstract) {
+        var participant = new Participant();
+        participant.setUserName(userProfileAbstract.getDisplayName());
+        participant.setEmail(userProfileAbstract.getEmailAddress());
+        participant.setUserId(userProfileAbstract.getUserId());
+        participant.setType(ParticipantType.HUMAN);
+        return participant;
+    }
+
 }

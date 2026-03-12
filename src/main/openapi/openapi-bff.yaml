@@ -688,7 +688,6 @@ components:
     CreateChat:
       required:
         - type
-        - participants
       type: object
       properties:
         version:
@@ -713,9 +712,10 @@ components:
         appId:
           type: string
         participants:
+          description: list of email-addresses of participants to be added to the chat.
           type: array
           items:
-            $ref: '#/components/schemas/Participant'          
+            type: string
     UpdateChat:
       required:
         - name

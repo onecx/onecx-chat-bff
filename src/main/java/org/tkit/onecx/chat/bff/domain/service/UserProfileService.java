@@ -1,5 +1,6 @@
 package org.tkit.onecx.chat.bff.domain.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,7 +23,7 @@ public class UserProfileService {
     @RestClient
     UserProfileV1Api userProfileClient;
 
-    public Optional<UserProfileAbstract> performSearchRequest(UserProfileAbstractCriteria criteria) {
+    public Optional<List<UserProfileAbstract>> performSearchRequest(UserProfileAbstractCriteria criteria) {
         UserProfilePageResult result;
         try (Response response = userProfileClient.searchProfileAbstractsByCriteria(criteria)) {
             result = response.readEntity(UserProfilePageResult.class);
@@ -30,6 +31,6 @@ public class UserProfileService {
         if (result.getStream().isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(result.getStream().get(0));
+        return Optional.of(result.getStream());
     }
 }
