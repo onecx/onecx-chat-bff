@@ -5,14 +5,13 @@
   <parent>
     <groupId>org.tkit.onecx</groupId>
     <artifactId>onecx-quarkus3-parent</artifactId>
-    <version>2.5.0</version>
+    <version>3.1.0</version>
   </parent>
-
-  <groupId>org.tkit.onecx.chat.bff.rs</groupId>
 
   <artifactId>onecx-chat-bff</artifactId>
     <name>OneCX Chat Backend For Frontend</name>
   <version>999-SNAPSHOT</version>
+    <packaging>quarkus</packaging>
 
     <dependencies>
         <dependency>
@@ -111,17 +110,6 @@
         <dependency>
             <groupId>io.quarkiverse.mockserver</groupId>
             <artifactId>quarkus-mockserver-test</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.swagger.parser.v3</groupId>
-                    <artifactId>swagger-parser</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.parser.v3</groupId>
-            <artifactId>swagger-parser</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -135,7 +123,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 
   <build>
     <plugins>
