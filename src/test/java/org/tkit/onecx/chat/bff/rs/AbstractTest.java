@@ -7,6 +7,7 @@ import jakarta.json.JsonObjectBuilder;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.jwt.Claims;
+import org.mockserver.serialization.ObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -20,6 +21,7 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
+import shaded_package.com.fasterxml.jackson.annotation.JsonInclude;
 
 @QuarkusTestResource(MockServerTestResource.class)
 public abstract class AbstractTest {
@@ -83,6 +85,7 @@ public abstract class AbstractTest {
                             objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
                             return objectMapper;
                         }));
+        ObjectMapperFactory.createObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
 }

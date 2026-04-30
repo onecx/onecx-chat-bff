@@ -56,7 +56,7 @@ class ChatRestControllerTest extends AbstractTest {
             mockServerClient.clear(MOCK_ID);
             mockServerClient.clear(MOCK_ID_SECONDARY);
             mockServerClient.clear(MOCK_USER_PROFILE);
-        } catch (Exception e) {
+        } catch (Exception _) {
             // mockid not existing
         }
     }
