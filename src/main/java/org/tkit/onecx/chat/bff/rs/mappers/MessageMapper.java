@@ -20,7 +20,6 @@ public interface MessageMapper {
 
     CreateMessageDTO map(CreateMessage createMessage);
 
-    @Mapping(target = "skipAIProcessing", ignore = true)
     CreateMessage map(CreateMessageDTO createMessageDTO);
 
     MessageDTO mapToMessage(CreateMessageDTO createMessageDTO);
