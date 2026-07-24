@@ -842,3 +842,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AgentAbstract'
+    AgentStatus:
+      type: string
+      enum:
+        - DRAFT
+        - LIVE
+        - DEPRECATED
