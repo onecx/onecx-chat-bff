@@ -27,4 +27,4 @@ app:
         enabled: true
         spec:
           kcConfig:
-            defaultClientScopes: [ ocx-chat:all, ocx-pm:read, ocx-up:read ]
+            defaultClientScopes: [ ocx-chat:all, ocx-pm:read, ocx-up:read, ocx-ai:read ]
