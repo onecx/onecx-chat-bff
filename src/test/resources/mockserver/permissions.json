@@ -30,10 +30,8 @@
                             "write",
                             "delete"
                         ],
-                        "agents" : [
-                            "read",
-                            "write",
-                            "delete"
+                        "agent" : [
+                            "read"
                         ],
                         "permissions" : [
                             "admin-write",
@@ -70,7 +68,7 @@
                         "participant" : [
                             "read"
                         ],
-                        "agents" : [
+                        "agent" : [
                             "read"
                         ],
                         "permissions" : [

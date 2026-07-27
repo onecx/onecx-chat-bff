@@ -394,7 +394,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          agents:
+          agent:
             - read
       tags:
         - agent
