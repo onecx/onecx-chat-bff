@@ -37,6 +37,7 @@ class AgentRestControllerTest extends AbstractTest {
 
     KeycloakTestClient keycloakTestClient = new KeycloakTestClient();
     static final String MOCK_ID = "MOCK";
+    static final String USERNAME_TOKEN = "apm-username";
 
     @AfterEach
     void resetMockserver() {
@@ -74,7 +75,7 @@ class AgentRestControllerTest extends AbstractTest {
         var data = given()
                 .when()
                 .auth().oauth2(keycloakTestClient.getAccessToken(ADMIN))
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(USERNAME_TOKEN, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteria)
                 .post()
