@@ -21,7 +21,6 @@ import org.openapi.quarkus.onecx.ai.provider.svc.v1.client.model.AgentPageResult
 import org.tkit.onecx.chat.bff.rs.AbstractTest;
 import org.tkit.quarkus.log.cdi.LogService;
 
-// BFF API DTOs (for RestAssured requests/responses)
 import gen.org.tkit.onecx.chat.bff.rs.internal.model.*;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -38,7 +37,6 @@ class AgentRestControllerTest extends AbstractTest {
 
     KeycloakTestClient keycloakTestClient = new KeycloakTestClient();
     static final String MOCK_ID = "MOCK";
-    static final String USERNAME_TOKEN = "apm-username";
 
     @AfterEach
     void resetMockserver() {
@@ -76,10 +74,10 @@ class AgentRestControllerTest extends AbstractTest {
         var data = given()
                 .when()
                 .auth().oauth2(keycloakTestClient.getAccessToken(ADMIN))
-                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, ADMIN)
                 .contentType(APPLICATION_JSON)
                 .body(criteria)
-                .post("/")
+                .post()
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()
