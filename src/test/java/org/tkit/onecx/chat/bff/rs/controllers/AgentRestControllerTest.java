@@ -2,6 +2,7 @@ package org.tkit.onecx.chat.bff.rs.controllers;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -22,6 +23,7 @@ import org.tkit.onecx.chat.bff.rs.AbstractTest;
 import org.tkit.quarkus.log.cdi.LogService;
 
 import gen.org.tkit.onecx.chat.bff.rs.internal.model.*;
+import gen.org.tkit.onecx.chat.clients.model.ProblemDetailResponse;
 import io.quarkiverse.mockserver.test.InjectMockServerClient;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -88,4 +90,51 @@ class AgentRestControllerTest extends AbstractTest {
         assertThat(data.getTotalElements()).isEqualTo(3);
         assertThat(data.getStream()).isNotNull().hasSize(3);
     }
+
+    @Test
+    void searchAgentShouldReturnBadRequest() {
+        ProblemDetailResponse problemDetailResponse = new ProblemDetailResponse();
+        problemDetailResponse.setErrorCode(String.valueOf(BAD_REQUEST.getStatusCode()));
+        problemDetailResponse.setDetail("Bad Request");
+
+        mockServerClient.when(request()
+                .withPath("/v1/agents/search")
+                .withMethod(HttpMethod.POST))
+                .withId(MOCK_ID)
+                .respond(httpRequest -> response()
+                        .withStatusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(problemDetailResponse)));
+
+        var criteria = new AgentSearchCriteriaDTO();
+
+        var response = given()
+                .when()
+                .auth().oauth2(keycloakTestClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .body(criteria)
+                .post()
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                .extract()
+                .as(ProblemDetailResponse.class);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getDetail()).isEqualTo("Bad Request");
+        assertThat(Integer.valueOf(response.getErrorCode())).isEqualTo(BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
+    void searchAgentWithNoBodyShouldReturnBadRequest() {
+        given()
+                .when()
+                .auth().oauth2(keycloakTestClient.getAccessToken(ADMIN))
+                .header(USERNAME_TOKEN, ADMIN)
+                .contentType(APPLICATION_JSON)
+                .post()
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+    }
+
 }
