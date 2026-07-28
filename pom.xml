@@ -201,7 +201,20 @@
                 <outputFileName>onecx-user-profile-svc-v1.yaml</outputFileName>
                 <skipCache>true</skipCache>
             </configuration>
-          </execution>
+            </execution>
+            <execution>
+              <id>ai-provider-svc-external-v1</id>
+              <phase>generate-resources</phase>
+              <goals>
+                  <goal>wget</goal>
+              </goals>
+              <configuration>
+                  <url>https://raw.githubusercontent.com/onecx/onecx-ai-provider-svc/refs/heads/main/src/main/openapi/onecx-ai-v1.yaml</url>
+                  <outputDirectory>target/tmp/openapi</outputDirectory>
+                  <outputFileName>onecx-ai-provider-svc-v1.yaml</outputFileName>
+                  <skipCache>true</skipCache>
+              </configuration>
+            </execution>
         </executions>
       </plugin>
     </plugins>

@@ -20,9 +20,11 @@ app:
             read: permission on all GET requests and POST search
             write: permission on PUT, POST, PATCH requests, where objects are saved or updated
             delete: permission on all DELETE requests
+          agent:
+            read: permission on all GET requests and POST search
     keycloak:
       client:
         enabled: true
         spec:
           kcConfig:
-            defaultClientScopes: [ ocx-chat:all, ocx-pm:read, ocx-up:read ]
+            defaultClientScopes: [ ocx-chat:all, ocx-pm:read, ocx-up:read, ocx-ai:read ]
