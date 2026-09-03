@@ -114,6 +114,45 @@ class ChatRestControllerTest extends AbstractTest {
     }
 
     @Test
+    void getChatByIdShouldPropagateUserAuthorizationHeader() {
+        var chatId = "id-user-auth";
+        var userToken = keycloakClient.getAccessToken(ADMIN);
+        var userAuthorizationHeader = "Bearer " + userToken;
+        var principalToken = createToken(ADMIN, "org1");
+
+        ChatDTO chatDTO = new ChatDTO();
+        chatDTO.setType(ChatTypeDTO.HUMAN_DIRECT_CHAT);
+
+        mockServerClient
+                .when(request()
+                        .withPath("/internal/chats/" + chatId)
+                        .withMethod(HttpMethod.GET)
+                        .withHeader("UserAuthorization", userAuthorizationHeader)
+                        .withHeader(APM_HEADER_PARAM, principalToken))
+                .withId(MOCK_ID)
+                .respond(httpRequest -> response().withStatusCode(OK.getStatusCode())
+                        .withHeaders(new Header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON))
+                        .withContentType(MediaType.APPLICATION_JSON)
+                        .withBody(JsonBody.json(chatDTO)));
+
+        var res = given()
+                .when()
+                .auth().oauth2(userToken)
+                .header(USERNAME_TOKEN, ADMIN)
+                .header(APM_HEADER_PARAM, principalToken)
+                .contentType(APPLICATION_JSON)
+                .pathParam("id", chatId)
+                .get("{id}")
+                .then()
+                .statusCode(OK.getStatusCode())
+                .extract()
+                .body().as(ChatDTO.class);
+
+        assertThat(res).isNotNull();
+        assertThat(res.getType()).isEqualTo(ChatTypeDTO.HUMAN_DIRECT_CHAT);
+    }
+
+    @Test
     void getChatById_shouldReturnBadRequest() {
         var chatId = "id";
 
