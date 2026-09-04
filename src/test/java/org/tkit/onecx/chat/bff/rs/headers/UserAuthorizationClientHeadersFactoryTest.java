@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedHashMap;
@@ -87,5 +88,19 @@ class UserAuthorizationClientHeadersFactoryTest {
         invalid.put(APM_PRINCIPAL_TOKEN, new ArrayList<>());
 
         assertNull(method.invoke(null, invalid, HttpHeaders.AUTHORIZATION));
+    }
+
+    @Test
+    void getFirstIgnoreCaseShouldSkipMatchingKeyWithEmptyValueList() throws Exception {
+        Method method = UserAuthorizationClientHeadersFactory.class
+                .getDeclaredMethod("getFirstIgnoreCase", MultivaluedMap.class, String.class);
+        method.setAccessible(true);
+
+        MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+        headers.put(HttpHeaders.AUTHORIZATION, new ArrayList<>());
+        assertNull(method.invoke(null, headers, HttpHeaders.AUTHORIZATION));
+
+        headers.put(HttpHeaders.AUTHORIZATION, List.of("Bearer token"));
+        assertEquals("Bearer token", method.invoke(null, headers, HttpHeaders.AUTHORIZATION));
     }
 }
