@@ -52,8 +52,9 @@ class AgentRestControllerTest extends AbstractTest {
 
     @Test
     void searchAgentTest() {
-        AgentAbstract agent1 = new AgentAbstract().id("1").name("agent1").description("desc1");
-        AgentAbstract agent2 = new AgentAbstract().id("2").name("agent2").description("desc2");
+        AgentAbstract agent1 = new AgentAbstract().id("1").name("agent1").description("desc1")
+                .voiceEnabled(true).languageCode("en");
+        AgentAbstract agent2 = new AgentAbstract().id("2").name("agent2").description("desc2").voiceEnabled(false);
         AgentAbstract agent3 = new AgentAbstract().id("3").name("agent3").description("desc3");
 
         AgentPageResult pageResult = new AgentPageResult();
@@ -89,6 +90,14 @@ class AgentRestControllerTest extends AbstractTest {
         assertThat(data).isNotNull();
         assertThat(data.getTotalElements()).isEqualTo(3);
         assertThat(data.getStream()).isNotNull().hasSize(3);
+
+        AgentAbstractDTO voiceAgent = data.getStream().get(0);
+        assertThat(voiceAgent.getVoiceEnabled()).isTrue();
+        assertThat(voiceAgent.getLanguageCode()).isEqualTo("en");
+
+        AgentAbstractDTO silentAgent = data.getStream().get(1);
+        assertThat(silentAgent.getVoiceEnabled()).isFalse();
+        assertThat(silentAgent.getLanguageCode()).isNull();
     }
 
     @Test
