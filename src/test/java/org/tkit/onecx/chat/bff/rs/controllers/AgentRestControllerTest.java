@@ -98,6 +98,10 @@ class AgentRestControllerTest extends AbstractTest {
         AgentAbstractDTO silentAgent = data.getStream().get(1);
         assertThat(silentAgent.getVoiceEnabled()).isFalse();
         assertThat(silentAgent.getLanguageCode()).isNull();
+
+        AgentAbstractDTO noVoiceAgent = data.getStream().get(2);
+        assertThat(noVoiceAgent.getVoiceEnabled()).isFalse();
+        assertThat(noVoiceAgent.getLanguageCode()).isNull();
     }
 
     @Test
