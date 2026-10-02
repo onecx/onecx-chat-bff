@@ -46,6 +46,20 @@ quarkus.openapi-generator.codegen.spec.onecx_ai_provider_svc_v1_yaml.enable-secu
 ----
 ====
 
+== Agent search response
+
+The `POST /agents/search` endpoint returns each agent as an `AgentAbstract`. In addition to the existing `id`, `name`, `description` and `filter` fields, each agent carries its voice settings as returned by onecx-ai-provider-svc:
+
+[cols="1,2,1",opts="header"]
+|===
+| Field | Type | Description
+
+| `voiceEnabled` | boolean | Whether the agent has voice enabled. Defaults to `false` when the agent has no voice settings.
+| `languageCode` | string | Language code for the agent's voice. Omitted (`null`) when the agent has no voice settings.
+|===
+
+The BFF only surfaces these settings to chat clients so that chat-ui offers voice for voice-enabled agents. Chat clients authenticate to Pipecat directly with the user's OneCX tokens; the BFF never accepts or relays audio payloads.
+
 == Extensions
 .Extensions List
 [%collapsible]
