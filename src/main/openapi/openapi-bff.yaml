@@ -447,7 +447,7 @@ components:
         topic:
           type: string
         participant:
-          type: string       
+          type: string
         appId:
           type: string
         pageNumber:
@@ -556,10 +556,12 @@ components:
           description: userId of the chat owner/creator
         appId:
           type: string
+        lastMessageDate:
+          $ref: '#/components/schemas/OffsetDateTime'
         participants:
           type: array
           items:
-            $ref: '#/components/schemas/Participant'          
+            $ref: '#/components/schemas/Participant'
     Message:
       required:
         - type
