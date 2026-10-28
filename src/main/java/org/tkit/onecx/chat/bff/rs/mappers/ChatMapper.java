@@ -12,6 +12,7 @@ public interface ChatMapper {
     @Mapping(target = "participants", ignore = true)
     CreateChat map(CreateChatDTO createChatDTO, String userId);
 
+    @Mapping(target = "lastMessageDate", ignore = true)
     Chat map(ChatDTO chatDTO);
 
     @Mapping(target = "removeParticipantsItem", ignore = true)
