@@ -18,8 +18,6 @@ public interface MessageMapper {
 
     Message map(MessageDTO messageDTO);
 
-    CreateMessageDTO map(CreateMessage createMessage);
-
     CreateMessage map(CreateMessageDTO createMessageDTO);
 
     MessageDTO mapToMessage(CreateMessageDTO createMessageDTO);
